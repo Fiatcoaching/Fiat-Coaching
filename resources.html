@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Training Videos — Fiat Coaching</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="app-shell">
+  <nav class="sidebar">
+    <div class="sidebar-brand">Fiat Coaching</div>
+    <div class="sidebar-sub">Catholic Business Coaching</div>
+
+    <a class="nav-item" href="dashboard.html">Dashboard</a>
+    <a class="nav-item active" href="resources.html">Training Videos</a>
+    <a class="nav-item" href="prayers.html">Prayers</a>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-name" id="sidebar-name">Loading…</div>
+      <button id="logout-btn" class="btn btn-secondary" style="width:100%;">Sign out</button>
+    </div>
+  </nav>
+
+  <main class="main">
+    <h1>Training Videos</h1>
+    <p style="color: var(--ink-soft);">Watch anytime, in any order that's useful to you.</p>
+    <hr class="rule">
+    <div id="video-list"><div class="empty-state">Loading…</div></div>
+  </main>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="js/firebase-init.js"></script>
+<script src="js/auth-guard.js"></script>
+<script src="js/resources.js"></script>
+</body>
+</html>

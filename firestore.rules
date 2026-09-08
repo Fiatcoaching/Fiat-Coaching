@@ -1,0 +1,48 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // A client can read/update their own profile doc; only admins can create
+    // or delete profile docs (done via the Firebase Console, see README).
+    match /users/{userId} {
+      allow read: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+      allow write: if isAdmin();
+
+      // Session notes: client can read their own; only admin can write.
+      match /sessionNotes/{noteId} {
+        allow read: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+        allow write: if isAdmin();
+      }
+
+      // Homework: client can read their own and toggle "completed";
+      // only admin can create/delete.
+      match /homework/{hwId} {
+        allow read: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+        allow create, delete: if isAdmin();
+        allow update: if isSignedIn() &&
+          (request.auth.uid == userId || isAdmin()) &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['completed']);
+      }
+    }
+
+    // Shared library content: any signed-in client can read; only admin can write.
+    match /trainingVideos/{videoId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    match /prayers/{prayerId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+  }
+}
