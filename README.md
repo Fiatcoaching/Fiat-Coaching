@@ -1,122 +1,105 @@
 # Fiat Coaching Portal
 
-A private portal for your Catholic business coaching clients: session notes,
-homework, training videos, and prayers, each client sees only their own notes
-and homework, everyone sees the shared videos and prayers.
+A private portal for your Catholic business coaching clients: session
+notes, homework, training videos, and prayers. Each client sees only their
+own notes and homework; everyone sees the shared videos and prayers.
 
-It's a plain HTML/CSS/JS site — no build step — so it works directly on
-GitHub Pages. It uses **Firebase** (free tier) for login and storing data.
+It's a plain HTML/JS site — no build step, no backend, no account to set
+up. It works directly on GitHub Pages the moment you turn it on.
+
+Each real page (`index.html`, `dashboard.html`, `resources.html`,
+`prayers.html`, `admin.html`) is self-contained — its styling lives right
+inside that file, not in a shared stylesheet. The one exception is your
+client roster: it stays in a single shared file, `js/clients-data.js`, so
+you only ever have to update a client's info in one place instead of five.
 
 ---
 
-## Step 1 — Create your Firebase project (~5 min)
+## ⚠️ Important — read this first
 
-1. Go to https://console.firebase.google.com and sign in with any Google account.
-2. Click **Add project**, name it something like `coaching-portal`, and finish the wizard (you can skip Google Analytics).
-3. Once created, click the **web icon (`</>`)** to register a web app. Name it anything.
-4. Firebase will show you a `firebaseConfig` object. Copy it.
-5. Open `js/firebase-init.js` in this project and paste your values in place of `YOUR_API_KEY`, etc.
+This site has **no real server checking passwords**. A client "logging in"
+just means the page checks their name and password against a list stored
+in the site's own code (`js/clients-data.js`), then remembers them on that
+device using the browser's local storage (so they stay signed in on
+return visits). That means:
 
-## Step 2 — Turn on Authentication
+- Since your GitHub repo is **public**, anyone who finds the link — or
+  simply browses your repo's files directly on GitHub — can see every
+  client's name, session notes, homework, and password in plain text.
+- This is fine for a small group of trusted clients who understand it's a
+  simple, low-stakes system. It is **not** appropriate if you ever handle
+  anything genuinely sensitive.
+- If you want real privacy later, either (a) make the GitHub repo private
+  (requires a paid GitHub plan for Pages to still work), or (b) switch to
+  a real login system — ask me to help set that back up if you get there.
 
-1. In the Firebase console, go to **Build > Authentication > Get started**.
-2. Click the **Email/Password** provider and enable it.
+## How it works
 
-## Step 3 — Turn on Firestore (the database)
+- **`index.html`** — the sign-in page. Checks the name/password someone
+  types against the `CLIENTS` list in `js/clients-data.js`.
+- **`dashboard.html`** — a client's homework and session notes, pulled
+  from their entry in `CLIENT_CONTENT` in `js/clients-data.js`.
+- **`resources.html`** / **`prayers.html`** — shared with every client,
+  also stored in `js/clients-data.js`.
+- **`admin.html`** — a list of your clients with a "View as this client"
+  button, so you can see exactly what each person sees. It doesn't let you
+  edit anything directly — that happens in the data file (next section).
 
-1. Go to **Build > Firestore Database > Create database**.
-2. Choose **Production mode**, pick a location close to you, and finish.
-3. Go to the **Rules** tab and replace the contents with the rules in
-   `firestore.rules` (in this project — copy/paste them in and click Publish).
-   These rules make sure clients can only ever see their own homework and
-   session notes, never anyone else's.
+## Adding or updating a client
 
-## Step 4 — Add yourself as admin
+Everything lives in **`js/clients-data.js`**, split into two lists that
+work together:
 
-1. In **Authentication > Users**, click **Add user**. Use your own email and
-   a password.
-2. In **Firestore Database > Data**, click **Start collection**, name it
-   `users`. For the document ID, paste in the **User UID** shown next to the
-   user you just created (click the user row in Authentication to see it).
-3. Add these fields to that document:
-   - `name` (string) — your name
-   - `email` (string) — your email
-   - `role` (string) — `admin`
-4. Save. You can now sign in at `index.html` with that email/password and
-   you'll land on the admin console.
+- **`CLIENTS`** — just their sign-in: `'username': 'password'`
+- **`CLIENT_CONTENT`** — everything they see, keyed by that same username:
+  their display name, homework, and session notes
 
-## Step 5 — Add a new client
+**To add a new client:**
+1. In `CLIENTS`, add a line: `'jane': 'somepassword',`
+2. In `CLIENT_CONTENT`, copy the `'mary': { ... }` block, change the key
+   to `'jane'` (matching what you used above), and update `name`,
+   `homework`, and `sessionNotes`.
 
-Whenever you take on a new client:
+**To add homework for a client:** inside their `CLIENT_CONTENT` block, add
+an entry to their `homework` list:
+```js
+{ title: "...", dueDate: "...", description: "...", completed: false }
+```
 
-1. **Authentication > Users > Add user** — use their email and set a
-   temporary password (text or email it to them; they can't reset it
-   themselves yet since there's no "forgot password" flow built in — you can
-   add one later if you want).
-2. Copy their **User UID**.
-3. In **Firestore Database > Data**, open the `users` collection, click
-   **Add document**, and use their UID as the document ID.
-4. Add fields:
-   - `name` (string)
-   - `email` (string)
-   - `role` (string) — `client`
-5. That's it — they can now sign in and you'll see them in the client
-   dropdown on your Admin Console to add notes and homework.
+**To add a session note:** add an entry to their `sessionNotes` list:
+```js
+{ title: "...", date: "...", content: "..." }
+```
 
-## Step 6 — Put it on GitHub Pages
+**To add a training video or prayer:** add an entry to the shared
+`TRAINING_VIDEOS` or `PRAYERS` list near the bottom of the file, following
+the existing examples.
 
-1. Create a new repository on GitHub (can be private or public — private is
-   fine for GitHub Pages if you're on a paid plan; on the free plan, GitHub
-   Pages sites are public even from a private repo unless you upgrade, so
-   don't put anything sensitive directly in the code — all real client data
-   lives in Firebase, not in these files).
-2. Push all these files to that repository.
-3. In the repo, go to **Settings > Pages**. Under **Source**, choose the
+After any edit, save the file and commit the change on GitHub (or push
+from your computer) — the live site updates within a minute or two.
+
+## Put it on GitHub Pages
+
+1. Push all these files to a GitHub repository named `fiat-coaching-portal`
+   — make sure the files sit at the **top level** of the repo, not inside
+   a subfolder.
+2. In the repo, go to **Settings > Pages**. Under **Source**, choose the
    `main` branch and `/ (root)`, then save.
-4. GitHub will give you a URL like `https://yourusername.github.io/repo-name/`
-   — that's your live client portal. Share `index.html`'s URL with clients.
-
-## Everyday use
-
-- **You (admin)**: sign in → lands on the Admin Console. Pick a client from
-  the dropdown to add their homework/session notes. Use the other two tabs
-  to manage the shared Training Videos and Prayers libraries.
-- **Clients**: sign in → see their own dashboard with homework and session
-  notes, plus the shared Training Videos and Prayers pages from the sidebar.
+3. GitHub gives you a URL like `https://yourusername.github.io/fiat-coaching-portal/`
+   — that's your live client portal.
 
 ## Practice Portal — learn and experiment safely
 
-This project includes a second, self-contained copy of the site for
-practicing: **`practice.html`** and the `practice-*.html` pages.
+This project also includes a second, separate copy of the site for
+practicing: **`practice.html`** and the `practice-*.html` pages, backed by
+`css/style.css` and their own `js/practice-*.js` files.
 
-- It looks and behaves just like the real portal, but it doesn't use
-  Firebase at all — it stores its sample data in your browser's
-  `localStorage` instead.
-- Nothing you do here can affect your real Firebase data or your real
-  clients — it's completely separate.
-- Open `practice.html` (either straight from GitHub Pages once it's live,
-  or by double-clicking the file on your computer) and choose to enter as
-  Admin or as a Client.
-- As Admin, you can add/delete homework, session notes, videos, and
-  prayers, and see them show up the way a client would.
+- It looks and behaves like the real portal, but stores its sample data in
+  your browser's `localStorage` under different keys — so nothing you do
+  there touches your real clients.
+- Open `practice.html` and choose to enter as Admin or as a Client.
 - There's a **Reset practice data** button in the practice admin view if
-  you want to wipe your experiments and start over from the sample data.
+  you want to wipe your experiments and start over.
 
-This is the safest place to try edits to `css/style.css`, tweak the
-homework form, add a new field, etc. — since the practice pages share the
-same stylesheet as the real ones, anything you learn here carries straight
-over. Once you're happy with a change, apply the same edit to the matching
-real file (e.g. `dashboard.html` / `js/dashboard.js`) so it shows up for
-actual clients too.
-
-## What this doesn't include (on purpose, given "just a handful" of clients)
-
-- **Scheduling** — since you currently book in person/by text, there's no
-  calendar built in. If that changes, a Calendly embed can be added to the
-  dashboard in a few lines.
-- **Password reset / self-signup** — you create every account by hand in the
-  Firebase Console, which is quick at this scale. Worth automating once you
-  have more than a handful of clients.
-- **File uploads** (PDFs, worksheets) — videos are linked via YouTube/Vimeo
-  and prayers are typed text; if you want downloadable files too, Firebase
-  Storage can be added later.
+This is the safest place to try layout or style changes before making the
+same change to the real files.

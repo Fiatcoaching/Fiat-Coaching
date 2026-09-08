@@ -6,149 +6,103 @@
 <title>Admin — Fiat Coaching</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
+<style>
+:root {
+  --bone: #F7F2E9; --bone-dim: #EFE8D9; --ink: #332330; --ink-soft: #5C4C58;
+  --gold: #B8863E; --gold-soft: #D9B77A; --burgundy: #7A2E3B;
+  --sage: #6F7F5C; --sage-soft: #E4E9DC; --line: #DDD2BE; --white: #FFFDF9;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: var(--bone); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.55; }
+h1 { font-family: var(--font-display); font-weight: 600; color: var(--ink); margin: 0 0 0.4em 0; font-size: 2.4rem; }
+p, code { max-width: 68ch; }
+code { background: var(--bone-dim); padding: 0.1em 0.4em; border-radius: 3px; }
+button { font-family: var(--font-body); font-size: 0.95rem; font-weight: 600; padding: 0.65em 1.4em; border-radius: 3px; border: 1px solid transparent; cursor: pointer; }
+.btn-secondary { background: transparent; color: var(--burgundy); border-color: var(--burgundy); }
+.btn-secondary:hover { background: rgba(122,46,59,0.06); }
+.rule { border: none; height: 1px; background: linear-gradient(90deg, var(--gold) 0%, var(--gold-soft) 40%, transparent 100%); margin: 1.4em 0; }
+.app-shell { display: flex; min-height: 100vh; }
+.sidebar { width: 230px; flex-shrink: 0; background: var(--ink); color: var(--bone); padding: 1.8rem 1.4rem; display: flex; flex-direction: column; }
+.sidebar-brand { font-family: var(--font-display); font-size: 1.4rem; color: var(--white); margin-bottom: 0.1em; }
+.sidebar-sub { font-size: 0.78rem; color: var(--gold-soft); margin-bottom: 1.8rem; }
+.nav-item { display: block; padding: 0.6em 0.7em; border-radius: 3px; color: var(--bone-dim); font-size: 0.92rem; margin-bottom: 0.15em; text-decoration: none; }
+.nav-item:hover { background: rgba(255,255,255,0.06); }
+.nav-item.active { background: rgba(184,134,62,0.22); color: var(--white); border-left: 2px solid var(--gold); padding-left: calc(0.7em - 2px); }
+.sidebar-footer { margin-top: auto; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.12); }
+.sidebar-name { font-size: 0.85rem; color: var(--bone-dim); margin-bottom: 0.5em; }
+.main { flex: 1; padding: 2.6rem 3rem; max-width: 900px; }
+.entry { background: var(--white); border: 1px solid var(--line); border-left: 3px solid var(--gold-soft); padding: 1.1rem 1.3rem; margin-bottom: 0.9rem; border-radius: 2px; }
+.entry-title { font-weight: 600; font-size: 1.02rem; margin-bottom: 0.15em; }
+.entry-meta { font-size: 0.82rem; color: var(--ink-soft); }
+.entry-actions { margin-top: 0.7em; display: flex; gap: 0.6em; }
+.entry-actions button { font-size: 0.82rem; padding: 0.4em 0.9em; }
+.empty-state { border: 1px dashed var(--line); padding: 2rem; text-align: center; color: var(--ink-soft); border-radius: 3px; }
+@media (max-width: 800px) {
+  .app-shell { flex-direction: column; }
+  .sidebar { width: 100%; flex-direction: row; align-items: center; padding: 1rem 1.2rem; overflow-x: auto; }
+  .sidebar-brand, .sidebar-sub, .sidebar-footer { display: none; }
+  .nav-item { white-space: nowrap; margin-bottom: 0; margin-right: 0.3em; }
+  .main { padding: 1.6rem 1.2rem; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
 </head>
 <body>
 
 <div class="app-shell">
   <nav class="sidebar">
     <div class="sidebar-brand">Fiat Coaching</div>
-    <div class="sidebar-sub">Admin Console</div>
+    <div class="sidebar-sub">Admin</div>
 
-    <a class="nav-item active" href="#" data-tab="client-tab">Client Content</a>
-    <a class="nav-item" href="#" data-tab="videos-tab">Training Videos</a>
-    <a class="nav-item" href="#" data-tab="prayers-tab">Prayers</a>
-    <a class="nav-item" href="dashboard.html">← View as client</a>
+    <a class="nav-item active" href="admin.html">Clients</a>
 
     <div class="sidebar-footer">
-      <div class="sidebar-name" id="sidebar-name">Loading…</div>
-      <button id="logout-btn" class="btn btn-secondary" style="width:100%;">Sign out</button>
+      <div class="sidebar-name">Cassandra</div>
     </div>
   </nav>
 
   <main class="main">
-
-    <!-- ===================== CLIENT CONTENT TAB ===================== -->
-    <section id="client-tab">
-      <h1>Client Content</h1>
-      <p style="color: var(--ink-soft);">
-        Add session notes and homework for a specific client. To add a new
-        client account itself, see README.md — that step happens in the
-        Firebase Console.
-      </p>
-      <hr class="rule">
-
-      <div class="field select-client">
-        <label for="client-select">Client</label>
-        <select id="client-select">
-          <option value="">Select a client…</option>
-        </select>
-      </div>
-
-      <div id="client-panels" style="display:none;">
-
-        <h2>Add homework</h2>
-        <form id="homework-form">
-          <div class="field">
-            <label for="hw-title">Title</label>
-            <input type="text" id="hw-title" required>
-          </div>
-          <div class="field">
-            <label for="hw-due">Due date (optional, e.g. "Sept 20")</label>
-            <input type="text" id="hw-due">
-          </div>
-          <div class="field">
-            <label for="hw-desc">Description</label>
-            <textarea id="hw-desc" rows="3"></textarea>
-          </div>
-          <button type="submit" class="btn btn-primary">Add homework</button>
-        </form>
-
-        <hr class="rule">
-
-        <h2>Add session note</h2>
-        <form id="note-form">
-          <div class="field">
-            <label for="note-title">Title</label>
-            <input type="text" id="note-title" required placeholder="e.g. Session 4 — Pricing">
-          </div>
-          <div class="field">
-            <label for="note-content">Notes</label>
-            <textarea id="note-content" rows="5"></textarea>
-          </div>
-          <button type="submit" class="btn btn-primary">Add session note</button>
-        </form>
-
-        <hr class="rule">
-
-        <h2>Existing for this client</h2>
-        <h3 style="font-size:1rem; font-family: var(--font-body); font-weight:600;">Homework</h3>
-        <div id="admin-homework-list"><div class="empty-state">Select a client above.</div></div>
-        <h3 style="font-size:1rem; font-family: var(--font-body); font-weight:600; margin-top:1.4em;">Session notes</h3>
-        <div id="admin-notes-list"><div class="empty-state">Select a client above.</div></div>
-      </div>
-    </section>
-
-    <!-- ===================== TRAINING VIDEOS TAB ===================== -->
-    <section id="videos-tab" style="display:none;">
-      <h1>Training Videos</h1>
-      <p style="color: var(--ink-soft);">Visible to every client.</p>
-      <hr class="rule">
-
-      <form id="video-form">
-        <div class="field">
-          <label for="vid-title">Title</label>
-          <input type="text" id="vid-title" required>
-        </div>
-        <div class="field">
-          <label for="vid-url">YouTube or Vimeo URL</label>
-          <input type="url" id="vid-url" required placeholder="https://youtu.be/...">
-        </div>
-        <div class="field">
-          <label for="vid-desc">Description (optional)</label>
-          <textarea id="vid-desc" rows="2"></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary">Add video</button>
-      </form>
-
-      <hr class="rule">
-      <div id="admin-video-list"><div class="empty-state">Loading…</div></div>
-    </section>
-
-    <!-- ===================== PRAYERS TAB ===================== -->
-    <section id="prayers-tab" style="display:none;">
-      <h1>Prayers</h1>
-      <p style="color: var(--ink-soft);">Visible to every client.</p>
-      <hr class="rule">
-
-      <form id="prayer-form">
-        <div class="field">
-          <label for="pr-title">Title</label>
-          <input type="text" id="pr-title" required placeholder="e.g. Prayer Before Business Decisions">
-        </div>
-        <div class="field">
-          <label for="pr-category">Category (optional)</label>
-          <input type="text" id="pr-category" placeholder="e.g. Discernment">
-        </div>
-        <div class="field">
-          <label for="pr-text">Prayer text</label>
-          <textarea id="pr-text" rows="5" required></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary">Add prayer</button>
-      </form>
-
-      <hr class="rule">
-      <div id="admin-prayer-list"><div class="empty-state">Loading…</div></div>
-    </section>
-
+    <h1>Clients</h1>
+    <p style="color: var(--ink-soft);">
+      To add or edit a client's homework and session notes, edit
+      <code>js/clients-data.js</code> directly and commit the change on
+      GitHub — see README.md for the exact steps. This page just lets you
+      preview what each client sees.
+    </p>
+    <hr class="rule">
+    <div id="client-list"></div>
   </main>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script src="js/firebase-init.js"></script>
-<script src="js/auth-guard.js"></script>
-<script src="js/admin.js"></script>
+<script src="js/clients-data.js"></script>
+<script src="js/simple-auth.js"></script>
+<script>
+  const usernames = Object.keys(CLIENTS);
+  const list = document.getElementById("client-list");
+  if (!usernames.length) {
+    list.innerHTML = '<div class="empty-state">No clients yet — add one in js/clients-data.js.</div>';
+  } else {
+    usernames.forEach(function (username) {
+      const content = CLIENT_CONTENT[username];
+      const displayName = content ? content.name : username;
+      const el = document.createElement("div");
+      el.className = "entry";
+      el.innerHTML =
+        '<div class="entry-title">' + displayName + "</div>" +
+        '<div class="entry-meta">Username: ' + username + "</div>" +
+        '<div class="entry-actions"><button class="btn-secondary view-btn" data-username="' + username + '">View as this client</button></div>';
+      list.appendChild(el);
+    });
+    list.querySelectorAll(".view-btn").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        localStorage.setItem("fiat_current_user", btn.getAttribute("data-username"));
+        localStorage.setItem("fiat_admin_preview", "1");
+        window.location.href = "dashboard.html";
+      });
+    });
+  }
+</script>
 </body>
 </html>
